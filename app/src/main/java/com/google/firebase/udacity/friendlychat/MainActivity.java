@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mUsername = ANONYMOUS;
+//        mUsername = ANONYMOUS;
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -139,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
                         mMessageEditText.getText().toString(), mUsername, null
                 );
 
+                Log.i("mUsername:", mUsername);
+//                mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
                 mMessagesDatabaseReference.push().setValue(friendlyMessage);
 
                 // Clear input box
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
-                    onSignedIntIntialize(user.getDisplayName());
+                    onSignedInInitialize(user.getDisplayName());
                 } else {
                     // user is signed out
                     onSignedOutCleanup();
@@ -228,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onSignedIntIntialize(String username) {
+    private void onSignedInInitialize(String username) {
         mUsername = username;
         attachDatabaseReadListener();
     }
@@ -248,7 +251,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case R.id.sign_out_menu:
+                // sign out
+                AuthUI.getInstance().signOut(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -265,5 +275,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        onSignedOutCleanup();
     }
 }
