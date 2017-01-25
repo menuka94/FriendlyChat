@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        mUsername = ANONYMOUS;
+        mUsername = ANONYMOUS;
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -130,26 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)
         });
 
-
-        // Send button sends a message and clears the EditText
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FriendlyMessage friendlyMessage = new FriendlyMessage(
-                        mMessageEditText.getText().toString(), mUsername, null
-                );
-
-                Log.i("mUsername:", mUsername);
-//                mMessagesDatabaseReference.push().setValue(friendlyMessage);
-
-                mMessagesDatabaseReference.push().setValue(friendlyMessage);
-
-                // Clear input box
-                mMessageEditText.setText("");
-            }
-        });
-
-
 //        mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -158,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     onSignedInInitialize(user.getDisplayName());
+                    Log.d(TAG, "onAuthStateChange:signed_in: "+user.getUid());
                 } else {
                     // user is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
                     onSignedOutCleanup();
                     startActivityForResult(
                             AuthUI.getInstance()
@@ -173,6 +155,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+
+        // Send button sends a message and clears the EditText
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FriendlyMessage friendlyMessage = new FriendlyMessage(mMessageEditText.getText().toString(), mUsername, null);
+
+//                Log.i("mUsername:", mUsername);
+//                mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                mMessagesDatabaseReference.push().setValue(friendlyMessage);
+
+                // Clear input box
+                mMessageEditText.setText("");
+            }
+        });
     }
 
     @Override
