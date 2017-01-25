@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in
                     onSignedInInitialize(user.getDisplayName());
-                    Log.d(TAG, "onAuthStateChange:signed_in: "+user.getUid());
+                    Log.d(TAG, "onAuthStateChange:signed_in: " + user.getUid());
                 } else {
                     // user is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -192,47 +192,48 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RC_SIGN_IN){
-            if(resultCode == RESULT_OK){
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == RESULT_OK) {
                 // Sign-in succeeded, set up the UI
                 Toast.makeText(this, "Signed in!", Toast.LENGTH_SHORT).show();
-            }else if(resultCode == RESULT_CANCELED){
+            } else if (resultCode == RESULT_CANCELED) {
                 // Sign in was cancelled by the user, finish the activity
                 Toast.makeText(this, "Sign in canceled", Toast.LENGTH_SHORT).show();
                 finish();
-            }else if(requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK){
-                Uri selectedImageUri = data.getData();
-
-                // Get a reference to store fiel at chat_photos/<FILENAME>
-                StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
-
-                // Upload file to Firebase Storage
-                photoRef.putFile(selectedImageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // When the image has successfully uploaded, we get its download URL
-                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
-                                // Set the download URL to the message box, so that the user can send it to the database
-                                FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUrl.toString());
-                                mMessagesDatabaseReference.push().setValue(friendlyMessage);
-                                System.out.println("On Success!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                System.out.println("OnFailureListener: " + e);
-                                e.printStackTrace();
-                            }
-                        });
             }
+        } else if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            Uri selectedImageUri = data.getData();
+
+            // Get a reference to store file at chat_photos/<FILENAME>
+            StorageReference photoRef = mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
+
+            // Upload file to Firebase Storage
+            photoRef.putFile(selectedImageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            // When the image has successfully uploaded, we get its download URL
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                            // Set the download URL to the message box, so that the user can send it to the database
+                            FriendlyMessage friendlyMessage = new FriendlyMessage(null, mUsername, downloadUrl.toString());
+                            mMessagesDatabaseReference.push().setValue(friendlyMessage);
+                            System.out.println("On Success!");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            System.out.println("OnFailureListener: " + e);
+                            e.printStackTrace();
+                        }
+                    });
         }
     }
+    
 
-    private void attachDatabaseReadListener(){
-        if(mChildEventListener == null) {
+    private void attachDatabaseReadListener() {
+        if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -265,8 +266,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void detachDatabaseReadListener(){
-        if(mChildEventListener != null){
+    private void detachDatabaseReadListener() {
+        if (mChildEventListener != null) {
             mMessagesDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
         }
@@ -277,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
         attachDatabaseReadListener();
     }
 
-    private void onSignedOutCleanup(){
+    private void onSignedOutCleanup() {
         mUsername = ANONYMOUS;
         mMessageAdapter.clear();
         detachDatabaseReadListener();
@@ -292,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.sign_out_menu:
                 // sign out
                 AuthUI.getInstance().signOut(this);
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(mFirebaseAuth != null) {
+        if (mFirebaseAuth != null) {
             mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
         }
         mMessageAdapter.clear();
