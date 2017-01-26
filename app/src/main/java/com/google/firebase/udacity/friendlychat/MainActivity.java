@@ -36,7 +36,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.common.data.Freezable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -230,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
     }
-    
+
 
     private void attachDatabaseReadListener() {
         if (mChildEventListener == null) {
